@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js" integrity="sha512-aoTNnqZcT8B4AmeCFmiSnDlc4Nj/KPaZyB5G7JnOnUEkdNpCZs1LCankiYi01sLTyWy+m2P+W4XM+BuQ3Q4/Dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <title>Rest countris api</title>
+    </head>
+    <body>
+        Search by country name:<input id="inp" onkeyup="searchCountries()" placeholder="enter country name" />&nbsp;
+        <button onclick="re()">reset</button><br/><br/>
+        <button onclick="sortName()">sort by country name</button>&nbsp;&nbsp;
+        <button onclick="sortPopulation()">sort by population</button>&nbsp;&nbsp;
+        <button onclick="sortArea()">sort by area</button>&nbsp;&nbsp;
+        <br/><br/>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Country</th>
+                    <th>Capital</th>
+                    <th>Population</th>
+                    <th>Borders</th>
+                    <th>area</th>
+                    <th>Continents</th>
+                    <th>Flag</th>
+                </tr>
+            </thead>
+            <tbody id="tabBody"></tbody>
+        </table>
+
+        <script>
+            var b = document.getElementById('tabBody')
+            var Countries = []
+
+            axios.get('https://restcountries.com/v3/all').then((resp)=>{
+                genCountries(resp.data)
+                Countries = resp.data
+                console.log(resp.data[0])
+            })
+
+            function genCountries(arr){
+                b.innerHTML=""
+                arr.forEach((c)=>{
+                    var tr = document.createElement('tr')
+
+                    var td1 = document.createElement('td')
+                    td1.innerHTML=c.name.common
+                    tr.appendChild(td1)
+
+                    var td2 = document.createElement('td')
+                    td2.innerHTML=c.capital
+                    tr.appendChild(td2)
+
+                    var td3 = document.createElement('td')
+                    td3.innerHTML=c.population
+                    tr.appendChild(td3)
+
+                    var td4 = document.createElement('td')
+                    td4.innerHTML=c.borders
+                    tr.appendChild(td4)
+
+                    var td5 = document.createElement('td')
+                    td5.innerHTML=c.area
+                    tr.appendChild(td5)
+
+                    var td6 = document.createElement('td')
+                    td6.innerHTML=c.continents
+                    tr.appendChild(td6)
+
+                    var td7 = document.createElement('td')
+                    var flg = document.createElement('img')
+                    flg.src=c.flags[1]
+                    flg.style.width="80px"
+                    flg.style.height="40px"
+                    td7.appendChild(flg)
+                    tr.appendChild(td7)
+
+                    b.appendChild(tr)
+                })
+            }
+
+            function searchCountries(){
+                var x = document.getElementById('inp').value.toLowerCase()
+                var temp = Countries.filter((country)=>{
+                    return country.name.common.toLowerCase().startsWith(x)
+                })
+                genCountries(temp)
+            }
+            function sortName(){
+                var temp = [...Countries]
+                temp.sort((a,b)=>{
+                    if(a.name.common>b.name.common){
+                        return 1
+                    }
+                    if(a.name.common<b.name.common){
+                        return -1
+                    }
+                    return 0
+                })
+                genCountries(temp)
+            }
+            function sortPopulation(){
+                var temp = [...Countries]
+                temp.sort((a,b)=>{
+                    if(a.population>b.population){
+                        return -1
+                    }
+                    if(a.population<b.population){
+                        return 1
+                    }
+                    return 0
+                })
+                genCountries(temp)
+            }
+            function sortArea(){
+                var temp = [...Countries]
+                temp.sort((a,b)=>{
+                    if(a.area>b.area){
+                        return 1
+                    }
+                    if(a.area<b.area){
+                        return -1
+                    }
+                    return 0
+                })
+                genCountries(temp)
+            }
+            function re(){
+                document.getElementById('inp').value=''
+                genCountries(Countries)
+            }
+        </script>
+    </body>
+</html>
